@@ -1,0 +1,208 @@
+<!--Saved by Quest 5.8.6836.13983-->
+<asl version="580">
+  <include ref="English.aslx" />
+  <include ref="Core.aslx" />
+  <game name="A Messenger's Duty">
+    <gameid>60f05658-c552-4029-8d2e-9694739e59f7</gameid>
+    <version>1.0</version>
+    <firstpublished>2022</firstpublished>
+    <feature_asktell />
+    <appendobjectdescription type="boolean">false</appendobjectdescription>
+    <autodescription />
+    <showdescriptiononenter />
+    <attr name="autodescription_youarein" type="int">1</attr>
+    <attr name="autodescription_youarein_useprefix" type="boolean">false</attr>
+    <attr name="autodescription_youcango" type="int">0</attr>
+    <attr name="autodescription_youcansee" type="int">3</attr>
+    <attr name="autodescription_description" type="int">2</attr>
+    <description>For as long as you can remember, you have served as the royal family's messenger. </description>
+    <category>Fantasy</category>
+    <panestheme>Classic</panestheme>
+    <showpanes />
+    <turnoffplacesandobjects />
+    <autodisplayverbs type="boolean">false</autodisplayverbs>
+  </game>
+  <object name="Throne room">
+    <inherit name="editor_room" />
+    <isroom />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <descprefix type="string"></descprefix>
+    <description>This is where your employer, the {object:king}, gives orders to all the common folk from his {object:throne}.</description>
+    <object name="throne">
+      <inherit name="editor_object" />
+      <not_all />
+      <takemsg>The throne is far too heavy to lift!</takemsg>
+      <look>An ornate yet cushy throne, fit for a King.</look>
+      <scenery />
+    </object>
+    <object name="king">
+      <inherit name="editor_object" />
+      <inherit name="male" />
+      <visible />
+      <scenery />
+      <takemsg>It is not your duty to take the king places, that honor belongs to the royal cavalry.</takemsg>
+      <not_all />
+    </object>
+    <exit alias="east" to="Castle hallway">
+      <inherit name="eastdirection" />
+    </exit>
+  </object>
+  <object name="Your quarters">
+    <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <description>Your quarters are small, but well maintaned. Sunlight shines through the window. Next to your {object:bed} is a {object:nightstand}, with some personal items on top. The door to your south leads to the {command:go south:Castle hallway}.</description>
+    <beforefirstenter type="script"><![CDATA[
+      msg ("For as long as you can remember, you have served as the royal family's messenger. It is a respectable profession, and it brings you great pleasure that you are able to assist the king in some way. As you are needed fairly often, you have been given a small room in the castle. <br/><br/>One day, you wake up to the sound of the king ringing his bell from the nearby throne room. You get out from under the covers, make the bed, and prepare yourself for the day.<br/>")
+    ]]></beforefirstenter>
+    <object name="player">
+      <inherit name="editor_object" />
+      <inherit name="editor_player" />
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <scenery type="boolean">false</scenery>
+    </object>
+    <object name="bed">
+      <inherit name="editor_object" />
+      <scenery />
+      <takemsg>The bed is far too heavy to lift!</takemsg>
+      <not_all />
+      <look>An extremely neatly made bed. The covers are soft to the touch, and the pillows are perfectly aligned. You wouldn't have it any other way.</look>
+    </object>
+    <object name="nightstand">
+      <inherit name="editor_object" />
+      <scenery />
+      <takemsg>You could upend the nightstand, but doing so would make a huge mess of your room. You shudder at the thought of it.</takemsg>
+      <not_all />
+      <look type="script">
+        OutputTextNoBr ("Your nightstand. On top of it is a set of {object:pencils}")
+        if (dps_sameparent(player,journal)) {
+          OutputTextNoBr (" and a {object:journal}")
+        }
+        msg (".")
+      </look>
+    </object>
+    <exit alias="south" to="Castle hallway">
+      <inherit name="southdirection" />
+    </exit>
+    <object name="journal">
+      <inherit name="editor_object" />
+      <scenery />
+      <dropmsg>You set the journal down.</dropmsg>
+      <take type="script">
+        dps_take (journal, "You take the journal.")
+      </take>
+    </object>
+    <object name="pencils">
+      <inherit name="editor_object" />
+      <inroomdescription>A small tray of pencils.</inroomdescription>
+      <tookone type="boolean">false</tookone>
+      <scenery />
+      <not_all />
+      <take type="script">
+        if (pencils.tookone) {
+          msg ("You already took a pencil, go use that one!")
+        }
+        else {
+          pencils.tookone = true
+          dps_take (pencil, "You took a pencil from the tray.")
+        }
+      </take>
+    </object>
+  </object>
+  <object name="STORAGE">
+    <inherit name="editor_room" />
+    <description>BEGONE, CHEATER!!!</description>
+    <object name="pencil">
+      <inherit name="editor_object" />
+      <look>A bog-standard pencil. It is well sharpened.</look>
+      <dropmsg>You set down the pencil.</dropmsg>
+      <takemsg>You pick up the pencil.</takemsg>
+      <take />
+    </object>
+  </object>
+  <object name="Castle hallway">
+    <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <maindooropen type="boolean">false</maindooropen>
+    <description type="script">
+      msg ("The castle's hallway is a chaotic place. {once: As you leave your room, a young servant carrying a flask of some sort almost runs in to you. She apologizes profusely, and scrambles out the eastern {object:main door}, shutting it behind her. The {object:guard} lets out a sigh.}{notfirst: The {object:guard} stands watch next to the {object:main door}.} To the north are {command:go north:your quarters}, and to the west is the {command:go west:throne room}.")
+      if (Castle hallway.maindooropen) {
+        msg ("The main door is open to the east, and  leads to the {command:go east:courtyard}.")
+      }
+    </description>
+    <exit alias="north" to="Your quarters">
+      <inherit name="northdirection" />
+    </exit>
+    <object name="main door">
+      <inherit name="editor_object" />
+      <scenery />
+      <takemsg>The main door is far too large to carry!</takemsg>
+      <not_all />
+      <feature_usegive />
+      <look type="script">
+        if (Castle hallway.maindooropen) {
+          msg ("This is the door that leads out into the courtyard. It is currently open.")
+        }
+        else {
+          msg ("This is the door that leads out into the courtyard. It is currently open.")
+        }
+      </look>
+      <use type="script">
+        if (Castle hallway.maindooropen) {
+          msg ("The main door is shut. You can't use it right now.")
+        }
+        else {
+          msg ("yay you did it")
+        }
+      </use>
+    </object>
+    <object name="guard">
+      <inherit name="editor_object" />
+      <inherit name="male" />
+      <scenery />
+      <takemsg>You don't think that the guard would let you do that.</takemsg>
+      <not_all />
+      <inroomdescription type="string"></inroomdescription>
+      <look>An unarmored guard, mainly here for the illusion of security. He seems friendly enough. {once:Like most people, you can ask or tell him about things.}</look>
+      <speak>"It's nice to see you up and about. If you need something, just ask."</speak>
+      <askdefault type="script">
+        msg ("The guard pretends to understand your question about " + text + ", and gives a shrug in response.")
+      </askdefault>
+      <telldefault type="script">
+        msg ("The guard pretends to listen to you talk about " + text + ", and promptly goes back to staring at the door.")
+      </telldefault>
+      <ask type="scriptdictionary">
+        <item key="servant girl">
+          msg ("The guard sighs, and mutters something about the kids these days under his breath.")
+        </item>
+        <item key="king royal majesty">
+          msg ("\"The king should be in his throne room. I think he wants to see you.\"")
+        </item>
+        <item key="main door">
+          msg ("You ask the guard if he can open the door for you. \"Sure, but the king is looking for you. Talk to him first, then come back.\"")
+        </item>
+      </ask>
+      <tell type="scriptdictionary">
+        <item key="servant girl">
+          msg ("The guard sighs, and mutters something about the kids these days under his breath.")
+        </item>
+        <item key="main door">
+          msg ("You let the guard know that the door is closed, and ask if he can open the door for you. \"Sure, but the king is looking for you. Talk to him first, then come back.\"")
+        </item>
+      </tell>
+    </object>
+    <exit alias="west" to="Throne room">
+      <inherit name="westdirection" />
+    </exit>
+  </object>
+  <object name="Courtyard">
+    <inherit name="editor_room" />
+  </object>
+  <function name="dps_take" parameters="obj, taketext">
+    msg (taketext)
+    obj.Scenery = false
+    AddToInventory (obj)
+  </function>
+  <function name="dps_sameparent" parameters="obj1, obj2" type="boolean">
+    return (obj1.parent = obj2.parent)
+  </function>
+</asl>
