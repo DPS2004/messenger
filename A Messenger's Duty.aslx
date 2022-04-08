@@ -32,7 +32,7 @@
       <inherit name="editor_object" />
       <not_all />
       <takemsg>The throne is far too heavy to lift!</takemsg>
-      <look>An ornate yet cushy throne, fit for a King.</look>
+      <look>An ornate yet cushy throne, fit for a king.</look>
       <scenery />
     </object>
     <object name="king">
@@ -73,7 +73,7 @@
       <takemsg>You could upend the nightstand, but doing so would make a huge mess of your room. You shudder at the thought of it.</takemsg>
       <not_all />
       <look type="script">
-        OutputTextNoBr ("Your nightstand. On top of it is a set of {object:pencils}")
+        OutputTextNoBr ("Your nightstand. On top of it is a {object:pencil tray:tray of pencils}.")
         if (dps_sameparent(player,journal)) {
           OutputTextNoBr (" and a {object:journal}")
         }
@@ -87,25 +87,64 @@
       <inherit name="editor_object" />
       <scenery />
       <dropmsg>You set the journal down.</dropmsg>
+      <feature_usegive />
+      <readjournal type="string"></readjournal>
+      <giveto>Giving your journal away would be a very silly idea.</giveto>
       <take type="script">
         dps_take (journal, "You take the journal.")
       </take>
+      <read type="script"><![CDATA[
+        msg ("April 4: <br/>First entry, I am surprised I never thought to use a journal before. Organization of the mind is just as important as physical organization.<br/><br/>April 5:<br/>The king is having me visit a local bakery, and ask the owner for the cake recepie he uses. I was given permission to offer up to 500G to him if needed. <br/><br/>April 5 update: <br/>The owner asked for 600G, so I pitched in 100 of my own gold.<br/>The recipe is as follows:<br/><br/>(The rest of the page is torn out.)<br/><br/>April 6:<br/>I have contracted food poisoning from an improperly prepared cake. As such, I will be asking the king for a day off.")
+        if (journal.writtenin) {
+          msg (journal.writetext)
+        }
+      ]]></read>
+      <use type="script">
+        msg ("You open the journal and read it.")
+        do (journal, "read")
+      </use>
+      <useon type="scriptdictionary">
+        <item key="pencil"><![CDATA[
+          msg ("What will you write in today's entry?")
+          get input {
+            journal.writetext = journal.writetext + "<br>" + result
+            if (journal.writtenin = false) {
+              journal.writtenin = true
+              msg ("You start a new header for today, and write that down.")
+            }
+            else {
+              msg ("You navigate to today's header, and add that.")
+            }
+          }
+        ]]></item>
+      </useon>
+      <writtenin type="boolean">false</writtenin>
+      <writetext><![CDATA[<br>April 8:]]></writetext>
     </object>
-    <object name="pencils">
+    <object name="pencil tray">
       <inherit name="editor_object" />
       <inroomdescription>A small tray of pencils.</inroomdescription>
       <tookone type="boolean">false</tookone>
       <scenery />
       <not_all />
+      <feature_usegive />
       <take type="script">
-        if (pencils.tookone) {
+        if (pencil tray.tookone) {
           msg ("You already took a pencil, go use that one!")
         }
         else {
-          pencils.tookone = true
+          pencil tray.tookone = true
           dps_take (pencil, "You took a pencil from the tray.")
         }
       </take>
+      <look type="script">
+        if (pencil tray.tookone) {
+          msg ("A tray of pencils. All 13 of them are sharpened.")
+        }
+        else {
+          msg ("A tray of pencils. All 14 of them are sharpened.")
+        }
+      </look>
     </object>
   </object>
   <object name="STORAGE">
@@ -117,6 +156,10 @@
       <dropmsg>You set down the pencil.</dropmsg>
       <takemsg>You pick up the pencil.</takemsg>
       <take />
+      <feature_usegive />
+      <use type="script">
+        msg ("You flip the pencil around idly in your hands. {once:If you had something to write in, you could use the pencil on it.}")
+      </use>
     </object>
   </object>
   <object name="Castle hallway">
