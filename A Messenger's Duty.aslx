@@ -46,6 +46,26 @@
       <takemsg>It is not your duty to take the king places, that honor belongs to the royal cavalry.</takemsg>
       <not_all />
       <speak>{once:"Please, come closer. We wish to speak to you about a very important assignment.'}{notfirst:You try to think off something to say to the king, but you would be better of asking or telling him about something specific.}</speak>
+      <belltaken type="boolean">false</belltaken>
+      <ask type="scriptdictionary">
+        <item key="bell">
+          if (not king.belltaken) {
+            do (bell, "take")
+          }
+          else {
+            msg ("You ask the king where he got the bell. \"It is a long story, and we wish not to bore you with the details.\"")
+          }
+        </item>
+        <item key="pumpkin pie">
+          msg ("\"I do apologize dearly for the incident yesterday. Rest assured, the royal bakery was reprimanded severely.\" Although it made you ill, the pie was damn skippy, and you would eat more of it if it was remade.")
+        </item>
+      </ask>
+      <askdefault type="script">
+        msg ("If the king knows something about " + text + ", he doesn't seem to want to tell you.")
+      </askdefault>
+      <telldefault type="script">
+        msg ("The king listens to you tell him about " + text + ", but does not give any response.")
+      </telldefault>
     </object>
     <exit alias="east" to="Castle hallway">
       <inherit name="eastdirection" />
@@ -56,6 +76,10 @@
       <look type="script">
         msg ("A bell attached to a golden handle. The side is engraved with a fancy design of a man with a sword approaching a dragon.")
       </look>
+      <take type="script">
+        dps_take (bell, "{once:You ask the king if you can borrow the bell. \"Sure, why not. We have many more in the storage closet, after all.\"}{notfirst:You pick up the bell. It jingles.}")
+        king.belltaken = true
+      </take>
     </object>
     <object name="left painting">
       <inherit name="editor_object" />
@@ -121,7 +145,7 @@
         dps_take (journal, "You take the journal.")
       </take>
       <read type="script"><![CDATA[
-        msg ("April 4: <br/>First entry, I am surprised I never thought to use a journal before. Organization of the mind is just as important as physical organization.<br/><br/>April 5:<br/>The king is having me visit a local bakery, and ask the owner for the cake recepie he uses. I was given permission to offer up to 500G to him if needed. <br/><br/>April 5 update: <br/>The owner asked for 600G, so I pitched in 100 of my own gold.<br/>The recipe is as follows:<br/><br/>(The rest of the page is torn out.)<br/><br/>April 6:<br/>I have contracted food poisoning from an improperly prepared cake. As such, I will be asking the king for a day off.")
+        msg ("April 4: <br/>First entry, I am surprised I never thought to use a journal before. Organization of the mind is just as important as physical organization.<br/><br/>April 5:<br/>The king is having me visit a local bakery, and ask the owner for the pumpkin pie recipe he uses. I was given permission to offer up to 500G to him if needed. <br/><br/>April 5 update: <br/>The owner asked for 600G, so I pitched in 100 of my own gold.<br/>The recipe is as follows:<br/><br/>(The rest of the page is torn out.)<br/><br/>April 6:<br/>I have contracted food poisoning from an improperly prepared pie. As such, I will be asking the king for a day off.")
         if (journal.writtenin) {
           msg (journal.writetext)
         }
@@ -145,6 +169,10 @@
           }
         ]]></item>
       </useon>
+      <look type="script">
+        msg ("A simple leather journal, it has not been used much. You open the journal and read it.")
+        do (journal, "read")
+      </look>
     </object>
     <object name="pencil tray">
       <inherit name="editor_object" />
