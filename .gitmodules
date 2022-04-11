@@ -1,0 +1,6 @@
+[submodule "lib/xml2lua"]
+	path = lib/xml2lua
+	url = https://github.com/manoelcampos/xml2lua.git
+[submodule "lib/lovebird"]
+	path = lib/lovebird
+	url = https://github.com/rxi/lovebird

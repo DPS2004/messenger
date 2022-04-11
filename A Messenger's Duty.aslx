@@ -27,7 +27,7 @@
     <isroom />
     <usedefaultprefix type="boolean">false</usedefaultprefix>
     <descprefix type="string"></descprefix>
-    <description>{once:When he sees you walk in, the {object:king} sets the {object:bell} down on the arm rest of his {object:throne}. He beckons for you to come over and talk to him.}{notfirst:This is where your employer, the {object:king}, gives orders to all the common folk from his {object:throne}.} to the throne are two paintings, {object:left painting:one to the left}, and {object:right painting:one to the right}.</description>
+    <description>{once:When he sees you walk in, the {object:king} sets the {object:bell} down on the arm rest of his {object:throne}. He beckons for you to come over and talk to him.}{notfirst:This is where your employer, the {object:king}, gives orders to all the common folk from his {object:throne}.} On each side of the throne is a painting, {object:left painting:one to the left}, and {object:right painting:one to the right}.</description>
     <firstenter type="script">
       Castle hallway.ringingbell = false
     </firstenter>
@@ -45,27 +45,41 @@
       <scenery />
       <takemsg>It is not your duty to take the king places, that honor belongs to the royal cavalry.</takemsg>
       <not_all />
-      <speak>{once:"Please, come closer. We wish to speak to you about a very important assignment.'}{notfirst:You try to think off something to say to the king, but you would be better of asking or telling him about something specific.}</speak>
+      <speak type="script">
+        if (not king.givenpackage) {
+          king_givequest
+        }
+        else {
+          msg ("You try to think off something to say to the king, but you would be better of asking or telling him about something specific.")
+        }
+      </speak>
       <belltaken type="boolean">false</belltaken>
-      <ask type="scriptdictionary">
-        <item key="bell">
-          if (not king.belltaken) {
-            do (bell, "take")
-          }
-          else {
-            msg ("You ask the king where he got the bell. \"It is a long story, and we wish not to bore you with the details.\"")
-          }
-        </item>
-        <item key="pumpkin pie">
-          msg ("\"I do apologize dearly for the incident yesterday. Rest assured, the royal bakery was reprimanded severely.\" Although it made you ill, the pie was damn skippy, and you would eat more of it if it was remade.")
-        </item>
-      </ask>
+      <givenpackage type="boolean">false</givenpackage>
       <askdefault type="script">
         msg ("If the king knows something about " + text + ", he doesn't seem to want to tell you.")
       </askdefault>
       <telldefault type="script">
         msg ("The king listens to you tell him about " + text + ", but does not give any response.")
       </telldefault>
+      <ask type="scriptdictionary">
+        <item key="bell">
+          if (not king.belltaken) {
+            do (bell, "take")
+          }
+          else {
+            msg ("You ask the king where he got the bell. \"It is a long story, and We wish not to bore you with the details.\"")
+          }
+        </item>
+        <item key="pumpkin pie">
+          msg ("\"We do apologize dearly for the incident yesterday. Rest assured, the royal bakery was reprimanded severely.\" Although it made you ill, the pie was damn skippy, and you would eat more of it if it was remade.")
+        </item>
+        <item key="quest assignment duty task">
+          king_givequest
+        </item>
+        <item key="package box">
+          msg ("You ask the king about what is in the package for the executioner. He makes sure nobody else is in the room, then leans in and whispers. \"We have been informed that an enemy of the kingdom has infiltrated the castle, and We need them disposed of quickly and discreetly. It is of utmost importance that you do not open the package.\"")
+        </item>
+      </ask>
     </object>
     <exit alias="east" to="Castle hallway">
       <inherit name="eastdirection" />
@@ -154,6 +168,10 @@
         msg ("You open the journal and read it.")
         do (journal, "read")
       </use>
+      <look type="script">
+        msg ("A simple leather journal, it has not been used much. You open the journal and read it.")
+        do (journal, "read")
+      </look>
       <useon type="scriptdictionary">
         <item key="pencil"><![CDATA[
           msg ("What will you write in today's entry?")
@@ -169,10 +187,6 @@
           }
         ]]></item>
       </useon>
-      <look type="script">
-        msg ("A simple leather journal, it has not been used much. You open the journal and read it.")
-        do (journal, "read")
-      </look>
     </object>
     <object name="pencil tray">
       <inherit name="editor_object" />
@@ -214,11 +228,28 @@
         msg ("You flip the pencil around idly in your hands. {once:If you had something to write in, you could use the pencil on it.}")
       </use>
     </object>
+    <object name="package">
+      <inherit name="editor_object" />
+      <inherit name="openable" />
+      <look>The package that the king gave to you. It is surprisingly light for its size. The label on the top says "DELIVER TO: Chief Executioner, located at 41 Canyon Pass."</look>
+      <takemsg>You pick up the package.</takemsg>
+      <take />
+      <feature_container />
+      <close />
+      <open />
+      <openscript type="script">
+        msg ("Opening this package would be a violation of the Messenger's Oath, Section 1, Subsection C. You would need a very good reason to violate this code.")
+      </openscript>
+      <closescript type="script">
+        msg ("The package is already as closed as it can get.")
+      </closescript>
+    </object>
   </object>
   <object name="Castle hallway">
     <inherit name="editor_room" />
     <usedefaultprefix type="boolean">false</usedefaultprefix>
     <maindooropen type="boolean">false</maindooropen>
+    <ringingbell />
     <description type="script">
       OutputTextNoBr ("The castle's hallway is a chaotic place. {once: As you leave your room, a young servant carrying a flask of some sort almost runs in to you. She apologizes profusely, and scrambles out the eastern {object:main door}, shutting it behind her. The {object:guard} lets out a sigh.}{notfirst: The {object:guard} stands watch next to the {object:main door}.} To the north are {command:go north:your quarters}, and to the west is the {command:go west:throne room}. ")
       if (Castle hallway.ringingbell) {
@@ -228,7 +259,6 @@
         msg ("The main door is open to the east, and  leads to the {command:go east:courtyard}.")
       }
     </description>
-    <ringingbell />
     <exit alias="north" to="Your quarters">
       <inherit name="northdirection" />
     </exit>
@@ -320,5 +350,13 @@
   </function>
   <function name="dps_sameparent" parameters="obj1, obj2" type="boolean">
     return (obj1.parent = obj2.parent)
+  </function>
+  <function name="king_givequest">
+    msg ("\"Good morning, messenger, We need you to deliver this package to the executioner on the other side of the kingdom. The journey will be perilous, but we have faith in you. Good luck.\"")
+    if (not king.givenpackage) {
+      msg ("The king hands you a package. You put it in your satchel. ")
+      MoveObject (package, player)
+      king.givenpackage = true
+    }
   </function>
 </asl>
