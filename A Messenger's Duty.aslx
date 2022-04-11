@@ -27,7 +27,10 @@
     <isroom />
     <usedefaultprefix type="boolean">false</usedefaultprefix>
     <descprefix type="string"></descprefix>
-    <description>This is where your employer, the {object:king}, gives orders to all the common folk from his {object:throne}.</description>
+    <description>{once:When he sees you walk in, the {object:king} sets the {object:bell} down on the arm rest of his {object:throne}. He beckons for you to come over and talk to him.}{notfirst:This is where your employer, the {object:king}, gives orders to all the common folk from his {object:throne}.} to the throne are two paintings, {object:left painting:one to the left}, and {object:right painting:one to the right}.</description>
+    <firstenter type="script">
+      Castle hallway.ringingbell = false
+    </firstenter>
     <object name="throne">
       <inherit name="editor_object" />
       <not_all />
@@ -42,10 +45,32 @@
       <scenery />
       <takemsg>It is not your duty to take the king places, that honor belongs to the royal cavalry.</takemsg>
       <not_all />
+      <speak>{once:"Please, come closer. We wish to speak to you about a very important assignment.'}{notfirst:You try to think off something to say to the king, but you would be better of asking or telling him about something specific.}</speak>
     </object>
     <exit alias="east" to="Castle hallway">
       <inherit name="eastdirection" />
     </exit>
+    <object name="bell">
+      <inherit name="editor_object" />
+      <scenery />
+      <look type="script">
+        msg ("A bell attached to a golden handle. The side is engraved with a fancy design of a man with a sword approaching a dragon.")
+      </look>
+    </object>
+    <object name="left painting">
+      <inherit name="editor_object" />
+      <scenery />
+      <look>This painting depicts a much younger and fitter king leading a horde of knights. It has a silver border.</look>
+      <not_all />
+      <takemsg>You have daydreamed about having a painting in your room, but now is not the time to get one.</takemsg>
+    </object>
+    <object name="right painting">
+      <inherit name="editor_object" />
+      <scenery />
+      <look>This painting depicts the coronation of the young king. It has a golden border.</look>
+      <not_all />
+      <takemsg>You have daydreamed about having a painting in your room, but now is not the time to get one.</takemsg>
+    </object>
   </object>
   <object name="Your quarters">
     <inherit name="editor_room" />
@@ -90,6 +115,8 @@
       <feature_usegive />
       <readjournal type="string"></readjournal>
       <giveto>Giving your journal away would be a very silly idea.</giveto>
+      <writtenin type="boolean">false</writtenin>
+      <writetext><![CDATA[<br>April 8:]]></writetext>
       <take type="script">
         dps_take (journal, "You take the journal.")
       </take>
@@ -118,8 +145,6 @@
           }
         ]]></item>
       </useon>
-      <writtenin type="boolean">false</writtenin>
-      <writetext><![CDATA[<br>April 8:]]></writetext>
     </object>
     <object name="pencil tray">
       <inherit name="editor_object" />
@@ -167,11 +192,15 @@
     <usedefaultprefix type="boolean">false</usedefaultprefix>
     <maindooropen type="boolean">false</maindooropen>
     <description type="script">
-      msg ("The castle's hallway is a chaotic place. {once: As you leave your room, a young servant carrying a flask of some sort almost runs in to you. She apologizes profusely, and scrambles out the eastern {object:main door}, shutting it behind her. The {object:guard} lets out a sigh.}{notfirst: The {object:guard} stands watch next to the {object:main door}.} To the north are {command:go north:your quarters}, and to the west is the {command:go west:throne room}.")
+      OutputTextNoBr ("The castle's hallway is a chaotic place. {once: As you leave your room, a young servant carrying a flask of some sort almost runs in to you. She apologizes profusely, and scrambles out the eastern {object:main door}, shutting it behind her. The {object:guard} lets out a sigh.}{notfirst: The {object:guard} stands watch next to the {object:main door}.} To the north are {command:go north:your quarters}, and to the west is the {command:go west:throne room}. ")
+      if (Castle hallway.ringingbell) {
+        OutputTextNoBr ("You can hear a bell ringing from the throne room. ")
+      }
       if (Castle hallway.maindooropen) {
         msg ("The main door is open to the east, and  leads to the {command:go east:courtyard}.")
       }
     </description>
+    <ringingbell />
     <exit alias="north" to="Your quarters">
       <inherit name="northdirection" />
     </exit>
@@ -181,6 +210,7 @@
       <takemsg>The main door is far too large to carry!</takemsg>
       <not_all />
       <feature_usegive />
+      <shutmsg>The main door is shut. You can't use it right now.</shutmsg>
       <look type="script">
         if (Castle hallway.maindooropen) {
           msg ("This is the door that leads out into the courtyard. It is currently open.")
@@ -190,8 +220,8 @@
         }
       </look>
       <use type="script">
-        if (Castle hallway.maindooropen) {
-          msg ("The main door is shut. You can't use it right now.")
+        if (Castle hallway.maindooropen = false) {
+          msg (main door.shutmsg)
         }
         else {
           msg ("yay you did it")
@@ -236,9 +266,24 @@
     <exit alias="west" to="Throne room">
       <inherit name="westdirection" />
     </exit>
+    <exit alias="east" to="Courtyard">
+      <inherit name="eastdirection" />
+      <runscript />
+      <script type="script">
+        if (Castle hallway.maindooropen = false) {
+          msg (main door.shutmsg)
+        }
+        else {
+          MoveObject (player, Courtyard)
+        }
+      </script>
+    </exit>
   </object>
   <object name="Courtyard">
     <inherit name="editor_room" />
+    <exit alias="west" to="Castle hallway">
+      <inherit name="westdirection" />
+    </exit>
   </object>
   <function name="dps_take" parameters="obj, taketext">
     msg (taketext)
