@@ -45,6 +45,8 @@
       <scenery />
       <takemsg>It is not your duty to take the king places, that honor belongs to the royal cavalry.</takemsg>
       <not_all />
+      <belltaken type="boolean">false</belltaken>
+      <givenpackage type="boolean">false</givenpackage>
       <speak type="script">
         if (not king.givenpackage) {
           king_givequest
@@ -53,8 +55,6 @@
           msg ("You try to think off something to say to the king, but you would be better of asking or telling him about something specific.")
         }
       </speak>
-      <belltaken type="boolean">false</belltaken>
-      <givenpackage type="boolean">false</givenpackage>
       <askdefault type="script">
         msg ("If the king knows something about " + text + ", he doesn't seem to want to tell you.")
       </askdefault>
@@ -113,7 +113,12 @@
   <object name="Your quarters">
     <inherit name="editor_room" />
     <usedefaultprefix type="boolean">false</usedefaultprefix>
-    <description>Your quarters are small, but well maintaned. Sunlight shines through the window. Next to your {object:bed} is a {object:nightstand}, with some personal items on top. The door to your south leads to the {command:go south:Castle hallway}.</description>
+    <description type="script">
+      OutputTextNoBr ("Your quarters are small, but well maintaned. Sunlight shines through the window. Next to your {object:bed} is a {object:nightstand}, with some personal items on top. The door to your south leads to the {command:go south:Castle hallway}. ")
+      if (Castle hallway.ringingbell) {
+        OutputTextNoBr ("You can hear a bell ringing from the throne room. ")
+      }
+    </description>
     <beforefirstenter type="script"><![CDATA[
       msg ("For as long as you can remember, you have served as the royal family's messenger. It is a respectable profession, and it brings you great pleasure that you are able to assist the king in some way. As you are needed fairly often, you have been given a small room in the castle. <br/><br/>One day, you wake up to the sound of the king ringing his bell from the nearby throne room. You get out from under the covers, make the bed, and prepare yourself for the day.<br/>")
     ]]></beforefirstenter>
@@ -282,7 +287,8 @@
           msg (main door.shutmsg)
         }
         else {
-          msg ("yay you did it")
+          msg ("You walk through the main door.")
+          MoveObject (player, Courtyard)
         }
       </use>
     </object>
@@ -305,11 +311,21 @@
         <item key="servant girl">
           msg ("The guard sighs, and mutters something about the kids these days under his breath.")
         </item>
-        <item key="king royal majesty">
-          msg ("\"The king should be in his throne room. I think he wants to see you.\"")
+        <item key="king royal majesty package box">
+          if (not Castle hallway.maindooropen) {
+            msg ("\"The king should be in his throne room. I think he wants to see you.\"")
+          }
+          else {
+            msg ("You tell the guard about the package the king is having you deliver. \"Got it, the door should be open now.\"")
+          }
         </item>
         <item key="main door">
-          msg ("You ask the guard if he can open the door for you. \"Sure, but the king is looking for you. Talk to him first, then come back.\"")
+          if (not Castle hallway.maindooropen) {
+            msg ("You ask the guard if he can open the door for you. \"Sure, but the king is looking for you. Talk to him first, then come back.\"")
+          }
+          else {
+            msg ("\"The door should be open now.\"")
+          }
         </item>
       </ask>
       <tell type="scriptdictionary">
@@ -317,7 +333,20 @@
           msg ("The guard sighs, and mutters something about the kids these days under his breath.")
         </item>
         <item key="main door">
-          msg ("You let the guard know that the door is closed, and ask if he can open the door for you. \"Sure, but the king is looking for you. Talk to him first, then come back.\"")
+          if (not Castle hallway.maindooropen) {
+            msg ("You let the guard know that the door is closed, and ask if he can open the door for you. \"Sure, but the king is looking for you. Talk to him first, then come back.\"")
+          }
+          else {
+            msg ("You thank the guard for opening the door. \"Sure, it was no problem at all. Have a safe trip!\"")
+          }
+        </item>
+        <item key="king royal majesty package box">
+          if (not Castle hallway.maindooropen) {
+            msg ("You tell the guard that you need to see the king. \"The king should be in his throne room, to the west of here.\"")
+          }
+          else {
+            msg ("You tell the guard about the package the king is having you deliver. \"Got it, the door should be open now.\"")
+          }
         </item>
       </tell>
     </object>
@@ -352,11 +381,12 @@
     return (obj1.parent = obj2.parent)
   </function>
   <function name="king_givequest">
-    msg ("\"Good morning, messenger, We need you to deliver this package to the executioner on the other side of the kingdom. The journey will be perilous, but we have faith in you. Good luck.\"")
+    msg ("\"Good morning, messenger, We need you to deliver this package to the executioner on the other side of the kingdom. The journey will be perilous, but We have faith in you. Good luck.\"")
     if (not king.givenpackage) {
       msg ("The king hands you a package. You put it in your satchel. ")
       MoveObject (package, player)
       king.givenpackage = true
+      Castle hallway.maindooropen = true
     }
   </function>
 </asl>

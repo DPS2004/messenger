@@ -16,6 +16,7 @@ requirepath()
 
 inspect = require('lib/inspect')
 
+scriptprefix = '%%SCRIPT%%'
 
 function readobject(o,path)
 	for k,v in pairs(o) do
@@ -73,8 +74,10 @@ function readobject(o,path)
 						print(_i,_v)
 						newo[cname][_v._attr.key] = _v[1]
 					end
-				elseif cv._attr.type == 'script' or cv._attr.type == 'string' then
+				elseif cv._attr.type == 'string' then
 					newo[cname] = cv[1]
+				elseif cv._attr.type == 'script' then
+					newo[cname] = scriptprefix .. cv[1]
 				else
 					error('unknown type found')
 				end
