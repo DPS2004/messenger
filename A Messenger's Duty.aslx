@@ -236,7 +236,7 @@
     <object name="package">
       <inherit name="editor_object" />
       <inherit name="openable" />
-      <look>The package that the king gave to you. It is surprisingly light for its size. The label on the top says "DELIVER TO: Chief Executioner, located at 41 Canyon Pass."</look>
+      <look>The package that the king gave to you. It is surprisingly light for its large size. There are straps on one side to make carrying easier. The label on the top says "DELIVER TO: Chief Executioner, located at 41 Canyon Pass."</look>
       <takemsg>You pick up the package.</takemsg>
       <take />
       <feature_container />
@@ -368,8 +368,142 @@
   </object>
   <object name="Courtyard">
     <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <description><![CDATA[courtyard outline:<br/>gardener npc<br/>garden with flowers + bushes in it<br/><br/>the bushes have poisonous berries in them<br/><br/>if you can get the gardener to leave the room, and you have a shovel, you can dig up the garden to enter the catacombs<br/><br/>to east: main street<br/><br/>to west: castle hallway<br/><br/>to down: catacombs]]></description>
     <exit alias="west" to="Castle hallway">
       <inherit name="westdirection" />
+    </exit>
+    <exit alias="east" to="Main Street">
+      <inherit name="eastdirection" />
+    </exit>
+    <exit alias="down" to="Catacombs">
+      <inherit name="downdirection" />
+    </exit>
+  </object>
+  <object name="Main Street">
+    <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <description><![CDATA[main street outline:<br/><br/>Cat that runs when you try to pick it up, but can be grabbed with fish<br/><br/>merchant stalls line the street<br/><br/>to north: lake<br/><br/>to west: courtyard<br/><br/>to south: shady alleyway<br/><br/>to east: eastern road]]></description>
+    <exit alias="west" to="Courtyard">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="north" to="Lake">
+      <inherit name="northdirection" />
+    </exit>
+    <exit alias="south" to="Shady Alleyway">
+      <inherit name="southdirection" />
+    </exit>
+    <exit alias="east" to="Eastern Road">
+      <inherit name="eastdirection" />
+    </exit>
+  </object>
+  <object name="Lake">
+    <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <description><![CDATA[lake outline:<br/><br/>fisher sitting on a log, she needs fishing line, and maybe some encouragement<br/><br/><br/>to south: main street]]></description>
+    <exit alias="south" to="Main Street">
+      <inherit name="southdirection" />
+    </exit>
+  </object>
+  <object name="Shady Alleyway">
+    <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <description><![CDATA[alleyway outline:<br/><br/>two teenagers playing a card game. minigame here? get key item by winning it<br/><br/><br/><br/>to north: main street]]></description>
+    <exit alias="north" to="Main Street">
+      <inherit name="northdirection" />
+    </exit>
+  </object>
+  <object name="Eastern Road">
+    <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <description><![CDATA[Eastern Road outline:<br/><br/>to north: Foggy path<br/><br/>to south: abandoned house<br/><br/>]]></description>
+    <exit alias="west" to="Main Street">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="south" to="Abandoned House">
+      <inherit name="southdirection" />
+    </exit>
+    <exit alias="north" to="Foggypath_entrance">
+      <inherit name="northdirection" />
+    </exit>
+  </object>
+  <object name="Abandoned House">
+    <inherit name="editor_room" />
+    <isroom />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <description><![CDATA[Abandoned House outline:<br/><br/>This is where the chemist hides out, the servant you run into at the start. Its very messy, and disgusts the narrator. If you have the loaded box, you can enter the secret room<br/><br/>to north: eastern road<br/><br/>to south: secret room]]></description>
+    <exit alias="north" to="Eastern Road">
+      <inherit name="northdirection" />
+    </exit>
+    <exit alias="south" to="Secret room">
+      <inherit name="southdirection" />
+    </exit>
+  </object>
+  <object name="Foggypath_entrance">
+    <inherit name="editor_room" />
+    <description><![CDATA[Foggy path outline:<br/><br/>Zelda lost woods-like puzzle, the instructions you need to get past it are in the abandoned house<br/><br/>Once the puzzle is solved, the player does not need to do it a second time<br/><br/>To south: eastern road<br/><br/>to north: foggy path puzzle / Canyon<br/>]]></description>
+    <alias>Foggy path</alias>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <exit alias="south" to="Eastern Road">
+      <inherit name="southdirection" />
+    </exit>
+    <exit alias="north" to="westcanyon">
+      <inherit name="northdirection" />
+      <runscript />
+      <script type="script">
+        msg ("TEMPORARY: SKIPPING PUZZLE")
+        MoveObject (player, Canyon)
+      </script>
+    </exit>
+  </object>
+  <object name="westcanyon">
+    <inherit name="editor_room" />
+    <description><![CDATA[Canyon outline:<br/><br/>A huge canyon, with a broken bridge across it. <br/><br/>Crossing the bridge has two solutions, you can either get someone to fix it or you can cross it yourself with a typing speed puzzle (type the bold word in X seconds or less). similar to the foggy path, the puzzle is skipped after you complete it.<br/><br/>to south: foggy path<br/><br/>to east: bridge]]></description>
+    <alias>Canyon (west)</alias>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <exit alias="south" to="Foggypath_entrance">
+      <inherit name="southdirection" />
+    </exit>
+    <exit alias="east" to="bridge">
+      <inherit name="eastdirection" />
+    </exit>
+  </object>
+  <object name="bridge">
+    <inherit name="editor_room" />
+    <description><![CDATA[see west canyon for details<br/><br/>to west: west canyon<br/><br/>to east: east canyon]]></description>
+    <exit alias="west" to="westcanyon">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="east" to="eastcanyon">
+      <inherit name="eastdirection" />
+    </exit>
+  </object>
+  <object name="eastcanyon">
+    <inherit name="editor_room" />
+    <description><![CDATA[On this side of the canyon is where the executioner lives, his house is to the south<br/><br/>to west: bridge<br/><br/>to south: executioners house<br/><br/>]]></description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <alias>Canyon (east)</alias>
+    <exit alias="west" to="bridge">
+      <inherit name="westdirection" />
+    </exit>
+  </object>
+  <object name="executioner house">
+    <inherit name="editor_room" />
+    <alias>Executioner's house</alias>
+    <description><![CDATA[Executioner's house outline:<br/><br/>Executioner NPC, very buff man, handing him the box triggers the bad end of the game.<br/><br/>If the courtyard has been dug up, and you have a way to kill the Executioner, you can get the good end.<br/><br/>to north: Canyon (east)]]></description>
+  </object>
+  <object name="Catacombs">
+    <inherit name="editor_room" />
+    <description>Where the bodies of the previous messengers are</description>
+    <exit alias="up" to="Courtyard">
+      <inherit name="updirection" />
+    </exit>
+  </object>
+  <object name="Secret room">
+    <inherit name="editor_room" />
+    <description><![CDATA[Secret room outline:<br/><br/>Contains shovel, used to access catacombs + true ending<br/><br/>]]></description>
+    <exit alias="north" to="Abandoned House">
+      <inherit name="northdirection" />
     </exit>
   </object>
   <function name="dps_take" parameters="obj, taketext">
@@ -383,7 +517,7 @@
   <function name="king_givequest">
     msg ("\"Good morning, messenger, We need you to deliver this package to the executioner on the other side of the kingdom. The journey will be perilous, but We have faith in you. Good luck.\"")
     if (not king.givenpackage) {
-      msg ("The king hands you a package. You put it in your satchel. ")
+      msg ("The king hands you a package. It is almost as big as you are, but surprisingly light. You strap it to your back.")
       MoveObject (package, player)
       king.givenpackage = true
       Castle hallway.maindooropen = true
