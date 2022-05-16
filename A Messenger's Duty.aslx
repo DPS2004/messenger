@@ -80,6 +80,7 @@
           msg ("You ask the king about what is in the package for the executioner. He makes sure nobody else is in the room, then leans in and whispers. \"We have been informed that an enemy of the kingdom has infiltrated the castle, and We need them disposed of quickly and discreetly. It is of utmost importance that you do not open the package.\"")
         </item>
       </ask>
+      <look>The king is an interesting man, having previously lead armies. Now, all he does is lead you about on errands.</look>
     </object>
     <exit alias="east" to="Castle hallway">
       <inherit name="eastdirection" />
@@ -91,7 +92,7 @@
         msg ("A bell attached to a golden handle. The side is engraved with a fancy design of a man with a sword approaching a dragon.")
       </look>
       <take type="script">
-        dps_take (bell, "{once:You ask the king if you can borrow the bell. \"Sure, why not. We have many more in the storage closet, after all.\"}{notfirst:You pick up the bell. It jingles.}")
+        dps_take (bell, "{once:You ask the king if you can borrow the bell. \"Sure, why not. We have many more in the storage closet, after all.\"} You pick up the bell. It jingles.")
         king.belltaken = true
       </take>
     </object>
@@ -279,7 +280,7 @@
           msg ("This is the door that leads out into the courtyard. It is currently open.")
         }
         else {
-          msg ("This is the door that leads out into the courtyard. It is currently open.")
+          msg ("This is the door that leads out into the courtyard. It is currently closed.")
         }
       </look>
       <use type="script">
@@ -369,7 +370,19 @@
   <object name="Courtyard">
     <inherit name="editor_room" />
     <usedefaultprefix type="boolean">false</usedefaultprefix>
-    <description><![CDATA[courtyard outline:<br/>gardener npc<br/>garden with flowers + bushes in it<br/><br/>the bushes have poisonous berries in them<br/><br/>if you can get the gardener to leave the room, and you have a shovel, you can dig up the garden to enter the catacombs<br/><br/>to east: main street<br/><br/>to west: castle hallway<br/><br/>to down: catacombs]]></description>
+    <description type="script">
+      // courtyard outline:
+      // gardener npc
+      // garden with flowers + bushes in it
+      // the bushes have poisonous berries in them
+      // if you can get the gardener to leave the room, and you have a shovel, you can dig up the garden to enter the catacombs
+      // to east: main street
+      // to west: castle hallway
+      // to down: catacombs
+      msg ("{once:Stepping out of the castle, you see the sun shining brightly. Tending to some {object:bushes}, the {object:gardener} glances in your direction, and swiftly returns to his work.}  {notfirst:The courtyard is quite serene, with the only one here besides you being the royal gardener, trimming some bushes.} Lining the eastward path leading to the {command:go east:main street} are flowers of all sorts of colors. To the west is the open door of the {command:go west:castle}.")
+      // if player is carrying cat:
+      // Suddenly the cat jumps out of your arms, and begins attacking the gardener! You try to help, but he runs away screaming into the distance, with the cat clinging onto his hair.
+    </description>
     <exit alias="west" to="Castle hallway">
       <inherit name="westdirection" />
     </exit>
@@ -379,11 +392,56 @@
     <exit alias="down" to="Catacombs">
       <inherit name="downdirection" />
     </exit>
+    <object name="bushes">
+      <inherit name="editor_object" />
+      <scenery />
+      <look>Some simple green bushes, dotted with {object:berries}.</look>
+      <not_all />
+      <takemsg>Taking an entire bush out of a garden seems like a tall task. </takemsg>
+      <alt type="stringlist">
+        <value>bush</value>
+      </alt>
+    </object>
+    <object name="berries">
+      <inherit name="editor_object" />
+      <scenery />
+      <look>These purple berries naturally grow on the {object:bushes} of the courtyard. They look delicious.</look>
+      <attr name="not_all" type="boolean">false</attr>
+      <takemsg>You reach for a berry, but the gardener marches over and stops you. "Sorry, nothing can be taken from the courtyard. The natural beauty of this land needs to be preserved. You understand, right?"</takemsg>
+    </object>
+    <object name="gardener">
+      <inherit name="editor_object" />
+      <inherit name="male" />
+      <look>The gardener is an interesting fellow, and tends to take his job *way* too seriously. His hands are caked in dirt, and his face is coated in sweat. </look>
+      <scenery />
+      <not_all />
+      <takemsg>You don't think that the gardener would let you do that.</takemsg>
+      <speak>You try to make small talk with the gardener. He does not reciprocate it.</speak>
+    </object>
+    <object name="flowers">
+      <inherit name="editor_object" />
+      <scenery />
+      <look>These flowers look so amazing you might think they were fake, but they instead are a testament to the {object:gardener:gardener's} dedication to his craft.</look>
+      <attr name="not_all" type="boolean">false</attr>
+      <takemsg>You reach for a flower, but the gardener marches over and stops you. "Sorry, nothing can be taken from the courtyard. The natural beauty of this land needs to be preserved. You understand, right?"</takemsg>
+      <alt type="stringlist">
+        <value>flower</value>
+      </alt>
+    </object>
   </object>
   <object name="Main Street">
     <inherit name="editor_room" />
     <usedefaultprefix type="boolean">false</usedefaultprefix>
-    <description><![CDATA[main street outline:<br/><br/>Cat that runs when you try to pick it up, but can be grabbed with fish<br/><br/>merchant stalls line the street<br/><br/>to north: lake<br/><br/>to west: courtyard<br/><br/>to south: shady alleyway<br/><br/>to east: eastern road]]></description>
+    <description type="script">
+      // main street outline:
+      // Cat that runs when you try to pick it up, but can be grabbed with fish
+      // merchant stalls line the street
+      // to north: lake
+      // to west: courtyard
+      // to south: shady alleyway
+      // to east: eastern road
+      msg ("The main street is filled to the brim with shoppers and merchants alike. The underlying road is well worn from all the traffic.")
+    </description>
     <exit alias="west" to="Courtyard">
       <inherit name="westdirection" />
     </exit>
@@ -506,6 +564,27 @@
       <inherit name="northdirection" />
     </exit>
   </object>
+  <command>
+    <pattern>dps_skip</pattern>
+    <script><![CDATA[
+      msg ("> take journal")
+      do (journal, "take")
+      msg ("> take pencil")
+      do (pencil tray, "take")
+      msg ("> go south")
+      MoveObject (player, Castle hallway)
+      msg ("> go west")
+      MoveObject (player, Throne room)
+      msg ("> talk to king")
+      king_givequest
+      msg ("> take bell")
+      do (bell, "take")
+      msg ("> go east")
+      MoveObject (player, Castle hallway)
+      msg ("> go east")
+      MoveObject (player, Courtyard)
+    ]]></script>
+  </command>
   <function name="dps_take" parameters="obj, taketext">
     msg (taketext)
     obj.Scenery = false
