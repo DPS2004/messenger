@@ -440,12 +440,12 @@
       // to west: courtyard
       // to south: shady alleyway
       // to east: eastern road
-      msg ("The main street is filled to the brim with shoppers and merchants alike. The underlying road is well worn from all the traffic.")
+      msg ("The main street is filled to the brim with shoppers and merchants alike. The underlying road is well worn from all the traffic. A street sign informs you that to the north is {command:go north:Lake Stratwell}, and to the east is a {command:go east:road} leading to the Foggy Woods. At the western end of the street is the castle's {command:go west:courtyard}. {once:Out of the corner of your eye you see something dart into the {command:go south:alleyway} to your south.}{notfirst:Unmentioned by the sign is an {command:go south:alleyway} to the south.}")
     </description>
     <exit alias="west" to="Courtyard">
       <inherit name="westdirection" />
     </exit>
-    <exit alias="north" to="Lake">
+    <exit alias="north" to="Lake Stratwell">
       <inherit name="northdirection" />
     </exit>
     <exit alias="south" to="Shady Alleyway">
@@ -455,7 +455,7 @@
       <inherit name="eastdirection" />
     </exit>
   </object>
-  <object name="Lake">
+  <object name="Lake Stratwell">
     <inherit name="editor_room" />
     <usedefaultprefix type="boolean">false</usedefaultprefix>
     <description><![CDATA[lake outline:<br/><br/>fisher sitting on a log, she needs fishing line, and maybe some encouragement<br/><br/><br/>to south: main street]]></description>
@@ -583,6 +583,8 @@
       MoveObject (player, Castle hallway)
       msg ("> go east")
       MoveObject (player, Courtyard)
+      msg ("> go east")
+      MoveObject (player, Main Street)
     ]]></script>
   </command>
   <function name="dps_take" parameters="obj, taketext">
